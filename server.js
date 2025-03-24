@@ -12,7 +12,9 @@ app.use(express.json());
 
 
 
-
+app.get('/', (req, res) => {
+    res.send('Would You Rather backend is running!');
+  });
 
 
 app.listen(PORT, () => {
