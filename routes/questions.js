@@ -5,6 +5,8 @@ const { createQuestion, getSpecificQuestion, getRandomQuestion } = require('../c
 
 
 router.post('/create', createQuestion);
+router.get('/random', getRandomQuestion);
+router.get('/:id', getSpecificQuestion);
 
 
 
