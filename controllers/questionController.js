@@ -70,7 +70,28 @@ const voteOnQuestion = async (req, res) => {
           question[voteKey].push("anonymous");
 
             await question.save();
-            res.status(200).json({ message: "Vote counted!", question });
+
+            const totalVotes = question.votesOptionOne.length + question.votesOptionTwo.length;
+            const percentOptionOne = ((question.votesOptionOne.length / totalVotes) * 100).toFixed(1);
+            const percentOptionTwo = ((question.votesOptionTwo.length / totalVotes) * 100).toFixed(1);
+
+            //res.status(200).json({ message: "Vote counted!", question });
+
+            res.status(200).json({
+                message: "Vote counted!",
+                results: {
+                  optionOne: {
+                    text: question.optionOne,
+                    votes: question.votesOptionOne.length,
+                    percentage: percentOptionOne
+                  },
+                  optionTwo: {
+                    text: question.optionTwo,
+                    votes: question.votesOptionTwo.length,
+                    percentage: percentOptionTwo
+                  }
+                }
+              });
         
     } catch (error) {
         console.error("Error voting on question:", error.message);
