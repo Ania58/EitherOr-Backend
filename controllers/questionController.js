@@ -77,8 +77,8 @@ const voteOnQuestion = async (req, res) => {
             await question.save();
 
             const totalVotes = question.votesOptionOne.length + question.votesOptionTwo.length;
-            const percentOptionOne = ((question.votesOptionOne.length / totalVotes) * 100).toFixed(1);
-            const percentOptionTwo = ((question.votesOptionTwo.length / totalVotes) * 100).toFixed(1);
+            const percentOptionOne =  totalVotes === 0 ? 0 : ((question.votesOptionOne.length / totalVotes) * 100).toFixed(1);
+            const percentOptionTwo =  totalVotes === 0 ? 0 : ((question.votesOptionTwo.length / totalVotes) * 100).toFixed(1);
 
             //res.status(200).json({ message: "Vote counted!", question });
 
@@ -104,8 +104,37 @@ const voteOnQuestion = async (req, res) => {
     }
 };
 
+const showVotingResults = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const question = await Question.findById(id);
+
+        const totalVotes = question.votesOptionOne.length + question.votesOptionTwo.length;
+        const percentOptionOne =  totalVotes === 0 ? 0 : ((question.votesOptionOne.length / totalVotes) * 100).toFixed(1);
+        const percentOptionTwo =  totalVotes === 0 ? 0 : ((question.votesOptionTwo.length / totalVotes) * 100).toFixed(1);
+
+        res.status(200).json({
+            message: "Vote counted!",
+            results: {
+              optionOne: {
+                text: question.optionOne,
+                votes: question.votesOptionOne.length,
+                percentage: percentOptionOne
+              },
+              optionTwo: {
+                text: question.optionTwo,
+                votes: question.votesOptionTwo.length,
+                percentage: percentOptionTwo
+              }
+            }
+          });
+
+    } catch (error) {
+        console.error("Error showing the votes:", error.message);
+        res.status(500).send("Error showing the votes.");
+    }
+};
 
 
 
-
-module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, getAllQuestions, voteOnQuestion }
+module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, getAllQuestions, voteOnQuestion, showVotingResults }
