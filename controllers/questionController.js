@@ -72,7 +72,7 @@ const voteOnQuestion = async (req, res) => {
     }
 
           const voteKey = option === "optionOne" ? "votesOptionOne" : "votesOptionTwo";
-          question[voteKey].push("anonymous");
+          question[voteKey].push(voterId);
 
             await question.save();
 
