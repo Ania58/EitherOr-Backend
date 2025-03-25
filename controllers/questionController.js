@@ -41,6 +41,44 @@ const getRandomQuestion = async (req, res) => {
     }
 };
 
+const updateQuestion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedQuestion = await Question.findByIdAndUpdate(
+            id,
+            {
+                optionOne: req.body.optionOne,
+                optionTwo: req.body.optionTwo,
+            },
+            { new: true }
+        );
+
+        if (!updatedQuestion) {
+            return res.status(404).send("Question not found.");
+          }
+
+        res.status(200).json(updatedQuestion);
+    } catch (error) {
+        console.error("Error updating question:", error.message);
+        res.status(500).send("Could not update question");
+    }
+};
+
+const deleteQuestion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedQuestion = await Question.findByIdAndDelete(id);
+
+        if (!deletedQuestion) {
+            return res.status(404).send("Question not found.");
+          }
+          res.status(200).json({ message: "Question deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting question:", error.message);
+        res.status(500).send("Could not delete question");
+    }
+};
+
 const getAllQuestions = async (req, res) => {
     try {
         const allQuestions = await Question.find();
@@ -137,4 +175,4 @@ const showVotingResults = async (req, res) => {
 
 
 
-module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, getAllQuestions, voteOnQuestion, showVotingResults }
+module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults }
