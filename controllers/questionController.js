@@ -53,10 +53,10 @@ const getAllQuestions = async (req, res) => {
 
 const voteOnQuestion = async (req, res) => {
     try {
-        const { option } = req.body;
+        const { option, voterId  } = req.body;
         const { id } = req.params;
 
-        if (!["optionOne", "optionTwo"].includes(option)) {
+        if (!voterId || !["optionOne", "optionTwo"].includes(option)) {
             return res.status(400).send("Invalid option selected.");
           };
 
@@ -65,6 +65,11 @@ const voteOnQuestion = async (req, res) => {
         if (!question) {
             return res.status(404).send("Question not found.");
           };
+
+          const allVoters = [...question.votesOptionOne, ...question.votesOptionTwo];
+            if (allVoters.includes(voterId)) {
+            return res.status(403).send("You have already voted on this question.");
+    }
 
           const voteKey = option === "optionOne" ? "votesOptionOne" : "votesOptionTwo";
           question[voteKey].push("anonymous");
