@@ -41,11 +41,19 @@ const getRandomQuestion = async (req, res) => {
     }
 };
 
+const getAllQuestions = async (req, res) => {
+    try {
+        const allQuestions = await Question.find();
+        res.status(200).json(allQuestions);
+    } catch (error) {
+        console.error("Error getting all questions:", error.message);
+        res.status(500).send("Could not retrieve all questions");
+    }
+};
 
 
 
 
 
 
-
-module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion }
+module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, getAllQuestions }
