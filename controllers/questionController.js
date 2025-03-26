@@ -212,4 +212,30 @@ const getComments = async (req, res) => {
 };
 
 
-module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion, getComments }
+const updateComment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { commentId, text } = req.body;
+        const question = await Question.findById(id)
+
+        if (!question) {
+            return res.status(404).send("Question not found.");
+          };
+
+          const comment = question.comments.id(commentId); 
+            if (!comment) {
+                return res.status(404).send("Comment not found.");
+            };
+
+        comment.text = text; 
+        await question.save(); 
+    
+        res.status(200).json({ message: "Comment updated.", comments: question.comments });
+        
+    } catch (error) {
+        console.error("Error updating comment:", error.message);
+        res.status(500).send("Could not update comment");
+    }
+};
+
+module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion, getComments, updateComment }
