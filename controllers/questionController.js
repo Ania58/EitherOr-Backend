@@ -195,5 +195,21 @@ const addCommentToQuestion = async (req, res) => {
     }
 };
 
+const getComments = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const question = await Question.findById(id);
 
-module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion }
+        if (!question) {
+            return res.status(404).send("Question not found.");
+          }
+      
+          res.status(200).json(question.comments);
+    } catch (error) {
+        console.error("Error getting comments:", error.message);
+        res.status(500).send("Could not retrieve comments.");
+    }
+};
+
+
+module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion, getComments }
