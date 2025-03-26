@@ -238,4 +238,32 @@ const updateComment = async (req, res) => {
     }
 };
 
-module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion, getComments, updateComment }
+const deleteComment = async (req,res) => {
+    try {
+        const { id } = req.params;
+        const { commentId } = req.body;
+
+        const question = await Question.findById(id);
+
+        if (!question) {
+            return res.status(404).send("Question not found.");
+        }
+
+        const comment = question.comments.id(commentId);
+
+        if (!comment) {
+            return res.status(404).send("Comment not found");
+        }
+
+        question.comments.pull(commentId);
+        await question.save();
+
+        res.status(200).json({ message: "Comment deleted.", comments: question.comments });
+
+    } catch (error) {
+        console.error("Error deleting comment:", error.message);
+        res.status(500).send("Could not delete comment");
+    }
+}
+
+module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion, getComments, updateComment, deleteComment }

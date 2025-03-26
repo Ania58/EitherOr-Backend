@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { createQuestion, getSpecificQuestion, getRandomQuestion,  updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion, getComments, updateComment } = require('../controllers/questionController');
+const { createQuestion, getSpecificQuestion, getRandomQuestion,  updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion, getComments, updateComment, deleteComment } = require('../controllers/questionController');
 
 
 router.post('/create', createQuestion);
@@ -15,6 +15,7 @@ router.get('/', getAllQuestions);
 router.post('/:id/comments', addCommentToQuestion);
 router.get('/:id/comments', getComments);
 router.put('/:id/comments', updateComment);
+router.delete('/:id/comments', deleteComment);
 
 
 
