@@ -174,5 +174,26 @@ const showVotingResults = async (req, res) => {
 };
 
 
+const addCommentToQuestion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { text, user } = req.body;
 
-module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults }
+        const question = await Question.findById(id);
+
+        if (!question) {
+            return res.status(404).send("Question not found.");
+        }
+
+        question.comments.push({ user, text });
+        await question.save();
+
+        res.status(201).json(question.comments);
+    } catch (error) {
+        console.error("Error adding comment:", error.message);
+        res.status(500).send("Could not add comment");
+    }
+};
+
+
+module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion }
