@@ -81,22 +81,28 @@ const deleteQuestion = async (req, res) => {
 
 const getAllQuestions = async (req, res) => {
     const sortBy = req.query.sortBy;
+    const noPagination = req.query.noPagination === "true";
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
     let questions;
   
     try {
       if (sortBy === "newest") {
-        questions = await Question.find().sort({ createdAt: -1 });
+        questions = await Question.find().sort({ createdAt: -1 }).skip(noPagination ? 0 :skip).limit(noPagination ? 0 :limit);;
       } else if (sortBy === "weird") {
-        questions = await Question.find().sort({ weirdVotes: -1 });
+        questions = await Question.find().sort({ weirdVotes: -1 }).skip(noPagination ? 0 :skip).limit(noPagination ? 0 :limit);
       } else if (sortBy === "popular") {
         const all = await Question.find();
-        questions = all.sort((a, b) => {
+        const sorted = all.sort((a, b) => {
           const votesA = a.votesOptionOne.length + a.votesOptionTwo.length;
           const votesB = b.votesOptionOne.length + b.votesOptionTwo.length;
           return votesB - votesA; 
         });
+        questions = noPagination ? sorted : sorted.slice(skip, skip + limit);
       } else {
-        questions = await Question.find();
+        questions = await Question.find().skip(noPagination ? 0 :skip).limit(noPagination ? 0 :limit);
       }
       res.status(200).json(questions);
     } catch (error) {
