@@ -176,11 +176,21 @@ const showVotingResults = async (req, res) => {
 const markAsWeird = async (req, res) => {
     try {
       const { id } = req.params;
+      const { voterId } = req.body;
+
+      if (!voterId) {
+        return res.status(400).send("Voter ID is required.");
+      }
   
       const question = await Question.findById(id);
       if (!question) return res.status(404).send("Question not found.");
+
+      if (question.weirdVoters.includes(voterId)) {
+        return res.status(403).send("You already marked this question as weird.");
+      }
   
       question.weirdVotes += 1;
+      question.weirdVoters.push(voterId);
       await question.save();
   
       res.status(200).json({
