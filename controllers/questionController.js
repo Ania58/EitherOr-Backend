@@ -80,14 +80,31 @@ const deleteQuestion = async (req, res) => {
 };
 
 const getAllQuestions = async (req, res) => {
+    const sortBy = req.query.sortBy;
+    let questions;
+  
     try {
-        const allQuestions = await Question.find();
-        res.status(200).json(allQuestions);
+      if (sortBy === "newest") {
+        questions = await Question.find().sort({ createdAt: -1 });
+      } else if (sortBy === "weird") {
+        questions = await Question.find().sort({ weirdVotes: -1 });
+      } else if (sortBy === "popular") {
+        const all = await Question.find();
+        questions = all.sort((a, b) => {
+          const votesA = a.votesOptionOne.length + a.votesOptionTwo.length;
+          const votesB = b.votesOptionOne.length + b.votesOptionTwo.length;
+          return votesB - votesA; 
+        });
+      } else {
+        questions = await Question.find();
+      }
+      res.status(200).json(questions);
     } catch (error) {
-        console.error("Error getting all questions:", error.message);
-        res.status(500).send("Could not retrieve all questions");
+      console.error("Failed to fetch questions:", error);
+      res.status(500).json({ message: "Something went wrong." });
     }
-};
+  };
+  
 
 const voteOnQuestion = async (req, res) => {
     try {
