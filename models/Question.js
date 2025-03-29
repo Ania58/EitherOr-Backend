@@ -11,6 +11,7 @@ const questionSchema = new mongoose.Schema({
   optionTwo: { type: String, required: true },
   votesOptionOne: { type: [String], default: [] },
   votesOptionTwo: { type: [String], default: [] },
+  weirdVotes: { type: Number, default: 0 },
   weirdVoters: { type: [String], default: [] },
   comments: { type: [commentSchema], default: [] },
   createdAt: { type: Date, default: Date.now }
