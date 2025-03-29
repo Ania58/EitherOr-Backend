@@ -173,6 +173,27 @@ const showVotingResults = async (req, res) => {
     }
 };
 
+const markAsWeird = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const question = await Question.findById(id);
+      if (!question) return res.status(404).send("Question not found.");
+  
+      question.weirdVotes += 1;
+      await question.save();
+  
+      res.status(200).json({
+        message: "Marked as weird!",
+        weirdVotes: question.weirdVotes
+      });
+  
+    } catch (error) {
+      console.error("Error marking as weird:", error.message);
+      res.status(500).send("Error processing weird vote.");
+    }
+  };  
+
 
 const addCommentToQuestion = async (req, res) => {
     try {
@@ -266,4 +287,4 @@ const deleteComment = async (req,res) => {
     }
 }
 
-module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, addCommentToQuestion, getComments, updateComment, deleteComment }
+module.exports = { createQuestion, getSpecificQuestion, getRandomQuestion, updateQuestion, deleteQuestion, getAllQuestions, voteOnQuestion, showVotingResults, markAsWeird, addCommentToQuestion, getComments, updateComment, deleteComment }
