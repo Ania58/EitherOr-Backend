@@ -269,7 +269,7 @@ const getComments = async (req, res) => {
 const updateComment = async (req, res) => {
     try {
         const { id } = req.params;
-        const { commentId, text } = req.body;
+        const { commentId, text, user } = req.body;
         const question = await Question.findById(id)
 
         if (!question) {
@@ -280,6 +280,10 @@ const updateComment = async (req, res) => {
             if (!comment) {
                 return res.status(404).send("Comment not found.");
             };
+
+            if (comment.user !== user) {
+                return res.status(403).send("You can only edit your own comment.");
+              }
 
         comment.text = text; 
         await question.save(); 
