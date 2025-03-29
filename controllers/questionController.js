@@ -299,7 +299,7 @@ const updateComment = async (req, res) => {
 const deleteComment = async (req,res) => {
     try {
         const { id } = req.params;
-        const { commentId } = req.body;
+        const { commentId, user } = req.body;
 
         const question = await Question.findById(id);
 
@@ -312,6 +312,10 @@ const deleteComment = async (req,res) => {
         if (!comment) {
             return res.status(404).send("Comment not found");
         }
+
+        if (comment.user !== user) {
+            return res.status(403).send("You can only delete your own comment.");
+          }
 
         question.comments.pull(commentId);
         await question.save();
