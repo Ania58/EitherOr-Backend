@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
   user: { type: String, default: 'Anonymous' },
+  name: { type: String, default: 'Anonymous' }, 
   text: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });

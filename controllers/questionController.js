@@ -231,7 +231,7 @@ const markAsWeird = async (req, res) => {
 const addCommentToQuestion = async (req, res) => {
     try {
         const { id } = req.params;
-        const { text, user } = req.body;
+        const { text, user, name } = req.body;
 
         const question = await Question.findById(id);
 
@@ -239,7 +239,7 @@ const addCommentToQuestion = async (req, res) => {
             return res.status(404).send("Question not found.");
         }
 
-        question.comments.push({ user, text });
+        question.comments.push({ user, text, name });
         await question.save();
 
         res.status(201).json(question.comments);
