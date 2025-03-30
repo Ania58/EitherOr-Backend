@@ -90,7 +90,7 @@ const getAllQuestions = async (req, res) => {
   
     try {
       if (sortBy === "newest") {
-        questions = await Question.find().sort({ createdAt: -1 }).skip(noPagination ? 0 :skip).limit(noPagination ? 0 :limit);;
+        questions = await Question.find().sort({ createdAt: -1 }).skip(noPagination ? 0 :skip).limit(noPagination ? 0 :limit);
       } else if (sortBy === "weird") {
         questions = await Question.find().sort({ weirdVotes: -1 }).skip(noPagination ? 0 :skip).limit(noPagination ? 0 :limit);
       } else if (sortBy === "popular") {
@@ -114,7 +114,8 @@ const getAllQuestions = async (req, res) => {
 
 const voteOnQuestion = async (req, res) => {
     try {
-        const { option, voterId  } = req.body;
+        const { option } = req.body;
+        const voterId = req.user?.uid || req.body.voterId;
         const { id } = req.params;
 
         if (!voterId || !["optionOne", "optionTwo"].includes(option)) {
@@ -140,8 +141,6 @@ const voteOnQuestion = async (req, res) => {
             const totalVotes = question.votesOptionOne.length + question.votesOptionTwo.length;
             const percentOptionOne =  totalVotes === 0 ? 0 : ((question.votesOptionOne.length / totalVotes) * 100).toFixed(1);
             const percentOptionTwo =  totalVotes === 0 ? 0 : ((question.votesOptionTwo.length / totalVotes) * 100).toFixed(1);
-
-            //res.status(200).json({ message: "Vote counted!", question });
 
             res.status(200).json({
                 message: "Vote counted!",
@@ -199,7 +198,8 @@ const showVotingResults = async (req, res) => {
 const markAsWeird = async (req, res) => {
     try {
       const { id } = req.params;
-      const { voterId } = req.body;
+      const voterId = req.user?.uid || req.body.voterId;
+
 
       if (!voterId) {
         return res.status(400).send("Voter ID is required.");
