@@ -7,6 +7,7 @@ const createQuestion = async (req, res) => {
         const newQuestion = await Question.create({
             optionOne: req.body.optionOne,
             optionTwo: req.body.optionTwo,
+            creator: req.user.uid,
         });
         res.status(201).json(newQuestion);
     } catch (error) {
@@ -42,42 +43,51 @@ const getRandomQuestion = async (req, res) => {
 };
 
 const updateQuestion = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updatedQuestion = await Question.findByIdAndUpdate(
-            id,
-            {
-                optionOne: req.body.optionOne,
-                optionTwo: req.body.optionTwo,
-            },
-            { new: true }
-        );
+  try {
+    const { id } = req.params;
+    const question = await Question.findById(id);
 
-        if (!updatedQuestion) {
-            return res.status(404).send("Question not found.");
-          }
-
-        res.status(200).json(updatedQuestion);
-    } catch (error) {
-        console.error("Error updating question:", error.message);
-        res.status(500).send("Could not update question");
+    if (!question) {
+      return res.status(404).send("Question not found.");
     }
+
+    if (question.creator !== req.user.uid) {
+      return res.status(403).send("Not authorized to edit this question.");
+    }
+
+    question.optionOne = req.body.optionOne;
+    question.optionTwo = req.body.optionTwo;
+    await question.save();
+
+    res.status(200).json(question);
+  } catch (error) {
+    console.error("Error updating question:", error.message);
+    res.status(500).send("Could not update question");
+  }
 };
 
 const deleteQuestion = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deletedQuestion = await Question.findByIdAndDelete(id);
+  try {
+    const { id } = req.params;
+    const question = await Question.findById(id);
 
-        if (!deletedQuestion) {
-            return res.status(404).send("Question not found.");
-          }
-          res.status(200).json({ message: "Question deleted successfully." });
-    } catch (error) {
-        console.error("Error deleting question:", error.message);
-        res.status(500).send("Could not delete question");
+    if (!question) {
+      return res.status(404).send("Question not found.");
     }
+
+    if (question.creator !== req.user.uid) {
+      return res.status(403).send("Not authorized to delete this question.");
+    }
+
+    await question.deleteOne();
+
+    res.status(200).json({ message: "Question deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting question:", error.message);
+    res.status(500).send("Could not delete question");
+  }
 };
+
 
 const getAllQuestions = async (req, res) => {
     const sortBy = req.query.sortBy;
